@@ -1,0 +1,30 @@
+service: serverless-websocket-chat
+
+provider:
+  name: aws
+  runtime: python3.6
+  region: us-west-2
+  stage: ${opt:stage, 'dev'}
+  websocketsApiName: custom-websockets-api-name
+  websocketsApiRouteSelectionExpression: $request.body.action
+
+functions:
+  connectHandler:
+    handler: src.connect.lambda_handler
+    events:
+      - websocket:
+          route: $connect
+  disconnectHandler:
+    handler: src.disconnect.lambda_handler
+    events:
+      - websocket:
+          route: $disconnect
+  defaultHandler:
+    handler: src.default.lambda_handler
+    events:
+      - websocket: $default
+  customFooHandler:
+    handler: handler.fooHandler
+    events:
+      - websocket:
+          route: foo
